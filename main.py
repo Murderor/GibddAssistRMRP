@@ -115,6 +115,95 @@ class InstructionDialog(QDialog):
         layout.addWidget(btn_box)
 
 
+# ==================== ДИАЛОГ "О ПРИЛОЖЕНИИ" ====================
+class AboutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("О приложении")
+        self.setModal(True)
+        self.setMinimumWidth(450)
+        self.setMinimumHeight(300)
+        layout = QVBoxLayout(self)
+
+        # Иконка/заголовок
+        title_label = QLabel("🚔 ГИБДД Helper")
+        title_label.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        title_label.setStyleSheet("color: #00ff9d; margin-top: 10px;")
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title_label)
+
+        # Версия
+        version_label = QLabel(f"Версия {__version__}")
+        version_label.setFont(QFont("Segoe UI", 11))
+        version_label.setStyleSheet("color: #888; margin-bottom: 15px;")
+        version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(version_label)
+
+        # Информация о разработчиках
+        dev_label = QLabel(
+            "👨‍💻 Разработчики:<br>"
+            "<b>Bisquit</b> & <b>k4ktusss</b>"
+        )
+        dev_label.setFont(QFont("Segoe UI", 12))
+        dev_label.setStyleSheet("color: #e0e0e0; margin: 10px; padding: 10px; background-color: #1a1a1a; border-radius: 8px;")
+        dev_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        dev_label.setWordWrap(True)
+        layout.addWidget(dev_label)
+
+        # Для кого
+        target_label = QLabel(
+            "🎯 Специально для проекта<br>"
+            "<b>RMRP</b>"
+        )
+        target_label.setFont(QFont("Segoe UI", 12))
+        target_label.setStyleSheet("color: #e0e0e0; margin: 10px; padding: 10px; background-color: #1a1a1a; border-radius: 8px;")
+        target_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        target_label.setWordWrap(True)
+        layout.addWidget(target_label)
+
+        # Проверка кода
+        verified_label = QLabel(
+            "✅ Код приложения проверен<br>"
+            "<span style='color: #00ff9d;'>Администрацией проекта RMRP</span>"
+        )
+        verified_label.setFont(QFont("Segoe UI", 11))
+        verified_label.setStyleSheet("color: #e0e0e0; margin: 10px; padding: 10px; background-color: #0a2a1a; border-radius: 8px; border: 1px solid #00b36b;")
+        verified_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        verified_label.setWordWrap(True)
+        layout.addWidget(verified_label)
+
+        # Копирайт
+        copyright_label = QLabel("© 2026 | Все права защищены")
+        copyright_label.setFont(QFont("Segoe UI", 9))
+        copyright_label.setStyleSheet("color: #666; margin-top: 15px;")
+        copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(copyright_label)
+
+        # Кнопка закрытия
+        btn_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        btn_box.accepted.connect(self.accept)
+        layout.addWidget(btn_box)
+
+        # Применяем стиль к диалогу
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #0f0f0f;
+            }
+            QPushButton {
+                background-color: #00b36b;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 20px;
+                font-size: 13px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #009956;
+            }
+        """)
+
+
 # ==================== ДИАЛОГИ ВЫБОРА НАКАЗАНИЯ ====================
 class PenaltyChoiceDialog(QDialog):
     def __init__(self, penalties, parent=None):
@@ -179,7 +268,7 @@ class FineInputDialog(QDialog):
 class ModernNPAViewer(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"ГИБДД Helper — RMRP (v{__version__}) made by Bisquit & k4ktusss")
+        self.setWindowTitle(f"ГИБДД Helper — RMRP (v{__version__})")
         self.resize(1400, 850)
 
         self.articles = []
@@ -412,6 +501,29 @@ class ModernNPAViewer(QMainWindow):
         """)
         self.copy_btn.clicked.connect(self._copy_to_clipboard)
         incriminated_layout.addWidget(self.copy_btn)
+
+        # ============ НОВАЯ КНОПКА "О ПРИЛОЖЕНИИ" ============
+        self.about_btn = QPushButton("ℹ️ О приложении")
+        self.about_btn.setStyleSheet("""
+            QPushButton { 
+                background-color: #2a2a2a; 
+                color: #00ff9d; 
+                border: 1px solid #00b36b; 
+                border-radius: 5px; 
+                padding: 8px; 
+                font-size: 12px; 
+                font-weight: bold; 
+                margin-top: 10px; 
+            }
+            QPushButton:hover { 
+                background-color: #00b36b; 
+                color: white; 
+                border: 1px solid #00b36b; 
+            }
+        """)
+        self.about_btn.clicked.connect(self._show_about_dialog)
+        incriminated_layout.addWidget(self.about_btn)
+
         incriminated_layout.addStretch()
 
         # Центральная панель
@@ -485,6 +597,11 @@ class ModernNPAViewer(QMainWindow):
 
         self._apply_modern_style()
         self._populate_article_list()
+
+    def _show_about_dialog(self):
+        """Показать диалог 'О приложении'."""
+        about_dialog = AboutDialog(self)
+        about_dialog.exec()
 
     def _apply_modern_style(self):
         self.setStyleSheet("""
